@@ -171,6 +171,17 @@ class TranslationApi
 
         self::$logger->debug('Downloaded translation '.$translation->filename);
 
-        return $response->getContent();
+        return self::removeBom($response->getContent());
+    }
+
+    private static function removeBom(string $data): string
+    {
+        // http://en.wikipedia.org/wiki/Byte_order_mark#UTF-8
+        if (substr($data, 0, 3) === pack('CCC', 0xEF, 0xBB, 0xBF)) {
+            $data = substr($data, 3);
+        }
+
+        return $data;
     }
 }
+
